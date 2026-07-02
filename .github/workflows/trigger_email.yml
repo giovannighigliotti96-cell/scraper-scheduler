@@ -1,0 +1,20 @@
+name: Trigger Email
+
+on:
+  schedule:
+    - cron: '5 16 * * *'   # 18:05 CEST
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger email su scraper-annunci
+        run: |
+          echo "$(date -u) -> triggering email.yml"
+          curl -f -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.SCRAPER_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/giovannighigliotti96-cell/scraper-annunci/actions/workflows/email.yml/dispatches" \
+            -d '{"ref":"main"}' && echo "OK"
