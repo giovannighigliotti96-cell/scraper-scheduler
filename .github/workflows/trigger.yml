@@ -1,32 +1,23 @@
-name: Trigger Scraper Annunci
+name: Trigger Scraping
 
 on:
   schedule:
-    - cron: '17 7 * * *'   # 09:17 CEST (scraping)
-    - cron: '17 10 * * *'  # 12:17 CEST (scraping)
-    - cron: '17 13 * * *'  # 15:17 CEST (scraping)
-    - cron: '30 15 * * *'  # 17:30 CEST (scraping)
-    - cron: '5 16 * * *'   # 18:05 CEST (email)
+    - cron: '17 7 * * *'   # 09:17 CEST
+    - cron: '17 10 * * *'  # 12:17 CEST
+    - cron: '17 13 * * *'  # 15:17 CEST
+    - cron: '30 15 * * *'  # 17:30 CEST
   workflow_dispatch:
 
 jobs:
   trigger:
     runs-on: ubuntu-latest
     steps:
-      - name: Determine and trigger workflow
+      - name: Trigger scraping su scraper-annunci
         run: |
-          HOUR=$(date -u +%H)
-          if [ "$HOUR" = "16" ]; then
-            WORKFLOW="email.yml"
-          else
-            WORKFLOW="scraping.yml"
-          fi
-          echo "UTC $(date -u +%H:%M) -> triggering $WORKFLOW on scraper-annunci"
+          echo "$(date -u) -> triggering scraping.yml"
           curl -f -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SCRAPER_PAT }}" \
             -H "Accept: application/vnd.github+json" \
             -H "Content-Type: application/json" \
-            "https://api.github.com/repos/giovannighigliotti96-cell/scraper-annunci/actions/workflows/$WORKFLOW/dispatches" \
-            -d '{"ref":"main"}'
-          echo "Done."
-
+            "https://api.github.com/repos/giovannighigliotti96-cell/scraper-annunci/actions/workflows/scraping.yml/dispatches" \
+            -d '{"ref":"main"}' && echo "OK"
